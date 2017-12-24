@@ -58,9 +58,14 @@ char * emotions[] = {
 //length of emotions array
 #define n_emotions (sizeof (emotions) / sizeof (char *))
 
-int lastRandom = 0;
+//number of emotions to associate at once
+#define linkages 2
+
+//storage array for distance matrix
+float emotionDist[n_emotions][n_emotions];
 
 //sanitizes and returns terminal input
+int lastRandom = 0;
 char getInput(){
   char toReturn = ' ';
   scanf("%c", &toReturn);
@@ -68,6 +73,8 @@ char getInput(){
   if(toReturn != 'y' && toReturn != 'x' && toReturn != 'n'){
     getInput();
   }
+
+  while ((getchar()) != '\n'); //clear input buffer
 
   return toReturn;
 }
@@ -86,8 +93,8 @@ unsigned randInt(int max){
   return r;
 }
 
-//asks question and stores answer in training array
-void askQuestion(){
+//asks question and returns emotion tagged if user is feeling it
+int askQuestion(){
   int a = randInt(n_emotions);
 
   while(a == lastRandom){
@@ -98,11 +105,29 @@ void askQuestion(){
   printf("answer [y/x/n]: ");
   char response = getInput();
 
-  lastRandom = a;
+  if(response == 'x'){
+    askQuestion();
+  }
+
+  if(response == 'n'){
+    return -1;
+  }
+
+  return a;
 }
 
 int main(){
-  askQuestion();
-  askQuestion();
+  int linkage[linkages];
+
+  //get array of two numbers to link together
+  int n = 0;
+  while(n < linkages){
+    int emotion = askQuestion();
+    if(emotion != -1){
+      linkage[n] = emotion;
+      n++;
+    }
+  }
+
    return (0);
 }
