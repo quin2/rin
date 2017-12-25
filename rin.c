@@ -1,3 +1,6 @@
+//BIG TODO: figure out how to store/load array in file
+//deal with garbage inputs
+//prevent numbers from cropping up many times in a row
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -59,12 +62,13 @@ char * emotions[] = {
 #define n_emotions (sizeof (emotions) / sizeof (char *))
 
 //number of emotions to associate at once
-#define linkages 2
+#define linkages 3
 
 //storage array for distance matrix
 float emotionDist[n_emotions][n_emotions];
 
 //sanitizes and returns terminal input
+//how to reject wrong characters correctly?
 int lastRandom = 0;
 char getInput(){
   char toReturn = ' ';
@@ -104,6 +108,7 @@ int askQuestion(){
   printf("are you feeling %s?\n", emotions[a]);
   printf("answer [y/x/n]: ");
   char response = getInput();
+  printf("\n");
 
   if(response == 'x'){
     askQuestion();
@@ -126,6 +131,14 @@ int main(){
     if(emotion != -1){
       linkage[n] = emotion;
       n++;
+    }
+  }
+
+  //find every possible combination of linkages
+  for(int i = 0; i < linkages - 1; i++){
+    for(int j = i + 1; j < linkages; j++){
+      printf("possible linkage is %s, %s\n", emotions[linkage[i]], emotions[linkage[j]]);
+      printf("possible linkage is %s, %s\n", emotions[linkage[j]], emotions[linkage[i]]);
     }
   }
 
