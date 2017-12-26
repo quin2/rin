@@ -1,6 +1,7 @@
 //BIG TODO: figure out how to store/load array in file
 //deal with garbage inputs
 //prevent numbers from cropping up many times in a row
+//double check file input and output (ok now I'm being paranoid )
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -59,10 +60,12 @@ char * emotions[] = {
 };
 
 //length of emotions array
-#define n_emotions (sizeof (emotions) / sizeof (char *))
+#define n_emotions 48
 
 //number of emotions to associate at once
 #define linkages 3
+
+#define fileName "train.rin"
 
 //storage array for distance matrix
 float emotionDist[n_emotions][n_emotions];
@@ -121,6 +124,40 @@ int askQuestion(){
   return a;
 }
 
+//loads the training array into the program
+void fileIn(){
+  FILE *f = fopen(fileName, "rb");
+  fread(emotionDist, sizeof(float), n_emotions * n_emotions, f);
+/*
+  for(i=0;i<5;i++)
+   {
+       (fgets (clientDataNew[i], 128, fp));
+   }
+   */
+  fclose(f);
+}
+
+//moves the current training array back to a local file
+void fileOut(){
+  FILE *f = fopen(fileName, "wb");
+  fwrite(emotionDist, sizeof(float), n_emotions * n_emotions, f);
+  fclose(f);
+}
+
+//tracks on number of training sessions
+float logTraining(){
+  float nTrained;
+  FILE *f = fopen("log", "r");
+  fscanf(f, "%f", &nTrained);
+
+  nTrained += linkages;
+
+  fprintf(f, "%f", nTrained);
+  fclose(f);
+
+  return nTrained;
+}
+
 int main(){
   int linkage[linkages];
 
@@ -134,13 +171,21 @@ int main(){
     }
   }
 
-  //find every possible combination of linkages
+  fileIn(); //implies empty train.rin is available!!
+
+  //float divisor = logTraining(); //causes segfault 11
+  //need to add additional file with basic input/ourput to keep total
+  //roouds of training
+
+  //find every possible combination of linkages, move to array
   for(int i = 0; i < linkages - 1; i++){
     for(int j = i + 1; j < linkages; j++){
       printf("possible linkage is %s, %s\n", emotions[linkage[i]], emotions[linkage[j]]);
       printf("possible linkage is %s, %s\n", emotions[linkage[j]], emotions[linkage[i]]);
     }
   }
+
+  //start operating on array!
 
    return (0);
 }
