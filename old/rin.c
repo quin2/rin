@@ -1,7 +1,9 @@
-//BIG TODO: figure out how to store/load array in file
+//BIG TODO:
+//test file in and file out functions
 //deal with garbage inputs
 //prevent numbers from cropping up many times in a row
-//double check file input and output (ok now I'm being paranoid )
+//fix fucky double storgae function causing segfault
+//in fucture: add testing to file io
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -172,10 +174,8 @@ int main(){
   }
 
   fileIn(); //implies empty train.rin is available!!
+  //test fileIN and fileOut first
 
-  //float divisor = logTraining(); //causes segfault 11
-  //need to add additional file with basic input/ourput to keep total
-  //roouds of training
 
   //find every possible combination of linkages, move to array
   for(int i = 0; i < linkages - 1; i++){
