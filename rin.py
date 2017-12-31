@@ -1,4 +1,4 @@
-#todo: find out how to make dictionary, 2D list!! or just preload everything smhhhh
+#todo: run clustering, make gui
 import sys
 import random
 import pickle
@@ -52,12 +52,9 @@ emotions = [
   "relaxed",
   "relieved",
   "serene",
-  "interest",
-  "politeness",
-  "surprise",
   ]
 
-targetLinkages = 3
+targetLinkages = 5
 
 fileName = "train.rin"
 dataFileName = "data"
@@ -71,23 +68,28 @@ def getInput():
 
     return dec
 
+#create blank array for filling on first run of rin
 def createArray():
     toReturn = []
     for emotion in range(len(emotions)): toReturn +=[[0.0] * len(emotions)]
     return toReturn
 
+#load array from file
 def loadArray():
     return pickle.load(open(fileName, "rb"))
 
+#save array to file
 def saveArray(toSave):
     pickle.dump(toSave, open(fileName, "wb"))
     return
 
+#load # of times run from file
 def loadData():
     if not Path(dataFileName).is_file():
         saveData(0)
     return pickle.load(open(dataFileName, "rb"))
 
+#save # of times run to file
 def saveData(toSave):
     pickle.dump(toSave, open(dataFileName, "wb"))
     return
@@ -97,8 +99,9 @@ def saveData(toSave):
 randValues = []
 links = []
 linkValues = []
+yesValues = []
 
-while len(links) < targetLinkages:
+while len(yesValues) < targetLinkages:
     #find new random number each time
     rand = random.randrange(len(emotions))
     y = 0;
@@ -117,6 +120,9 @@ while len(links) < targetLinkages:
     y = getInput()
 
     if(y == 'y'):
+        yesValues.append(rand)
+
+    elif(y == 'n'):
         links.append(rand)
         linkValues.append(1.0)
 
@@ -124,22 +130,38 @@ while len(links) < targetLinkages:
         links.append(rand)
         linkValues.append(0.5)
 
+#load data from past sessions
 if not Path(fileName).is_file():
     saveArray(createArray())
 
 emotionData = loadArray()
 currentNum = loadData() + targetLinkages
 
-#move information to master array
-for idx, item in enumerate(links):
-    for item2 in links[idx + 1:]:
-        emotionData[item][item2] += linkValues[idx]
-        emotionData[item2][item] += linkValues[idx]
+#move current session data to master array
+#for idx, item in enumerate(links):
+#    for item2 in links[idx + 1:]:
+#        emotionData[item][item2] += linkValues[idx]
+#        emotionData[item2][item] += linkValues[idx]
+
+#move session into master, version 2
+for idx, noVal in enumerate(links):
+    for yesVal in yesValues:
+        emotionData[noVal][yesVal] += linkValues[idx]
+        emotionData[yesVal][noVal] += linkValues[idx]
 
 saveArray(emotionData)
 saveData(currentNum)
 
+#print everything for transparency
+print()
+print("saved data")
 for n in emotionData:
     print(n)
 
 print(currentNum)
+
+#problem: greatest # is better...smaller dist is frowned upon
+#refine this somehow, see the insturctions below
+#begin single-link clustering:
+#find largest pair linkage, declare that pair
+#find biggest for rest of array, go through each element, recalculate distances
