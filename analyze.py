@@ -74,25 +74,41 @@ while cycleCount < cycleMax:
     print(merges)
     print()
 
-    #merge onto old col, delete the old one
-    nodesX[smallestX] = nodesX[smallestX] + nodesY[smallestY]
-    nodesY[smallestX] = nodesY[smallestX] + nodesY[smallestY]
+
 
     #only need to step through arr once to compare
     #not 100% sure this isright
-    for idx, x in enumerate(arr):
-        if arr[smallestX][idx] < arr[smallestY][idx]:
-            x[smallestX] = arr[smallestX][idx]
-            arr[idx][smallestX] = arr[smallestX][idx]
-        else:
-            x[smallestX] = arr[smallestY][idx]
-            arr[idx][smallestX] = arr[smallestX][idx]
+    #for idx, x in enumerate(arr):
+    #    if arr[smallestX][idx] < arr[smallestY][idx]:
+    #        sys.stdout.write(str(arr[smallestX][idx]) + " < " + str(arr[smallestY][idx]) + "\n")
+    #        x[smallestX] = arr[smallestX][idx]
+    #        arr[idx][smallestX] = arr[smallestX][idx]
+    #    else:
+    #        sys.stdout.write(str(arr[smallestX][idx]) + " > " + str(arr[smallestY][idx]) + "\n")
+    #        x[smallestX] = arr[smallestY][idx]
+    #        arr[idx][smallestX] = arr[smallest][idx]
 
-    #delate r/c in list
+    #step downward?
+    #use moving row #, nut keep same minx and miny same
+    #use smallestX as base
+    #I think this works, I just need to train it more!!!!
+    #or switch to ave agglomertive clustering 
+    for idx, x in enumerate(arr):
+        if x[smallestX] < x[smallestY]:
+            arr[smallestX][idx] = x[smallestX]
+        else:
+            x[smallestX] = x[smallestY]
+            arr[smallestX][idx] = x[smallestY]
+
+    #merge onto old col
+    nodesX[smallestX] = nodesX[smallestX] + nodesY[smallestY]
+    nodesY[smallestX] = nodesY[smallestX] + nodesY[smallestY]
+
+    #delate r/c in list,prob could also b here
     del arr[smallestY]
 
     for x in arr:
-        del x[smallestX]
+        del x[smallestY]
 
     del nodesY[smallestY]
     del nodesX[smallestY]
