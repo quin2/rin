@@ -22,7 +22,7 @@ emotions = [
   "envy",
   "frustration",
   "guilt",
-  "shame ",
+  "shame",
   "boredom",
   "despair",
   "disappointment",
@@ -159,9 +159,3 @@ for n in emotionData:
     print(n)
 
 print(currentNum)
-
-#problem: greatest # is better...smaller dist is frowned upon
-#refine this somehow, see the insturctions below
-#begin single-link clustering:
-#find largest pair linkage, declare that pair
-#find biggest for rest of array, go through each element, recalculate distances

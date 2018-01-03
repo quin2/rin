@@ -1,9 +1,11 @@
 #other half of rin: find trends in data
+#rename linkX and linkY?
 import pickle
 import sys
 
 fileName = "train.rin"
 dataFileName = "data"
+cycleMax = 5
 
 print("hello rin")
 print()
@@ -16,9 +18,7 @@ def loadArray():
 def loadData():
     return pickle.load(open(dataFileName, "rb"))
 
-def sim(member1, member2, outside):
-    return
-
+#central printing function
 def debugPrint(array, xList, yList):
     sys.stdout.write("   ")
     for i in xList:
@@ -35,7 +35,8 @@ def debugPrint(array, xList, yList):
         sys.stdout.write("\n")
     print()
 
-#do a pretty print of the data
+
+#load all data
 arr = loadArray()
 
 #define nodes
@@ -49,12 +50,11 @@ debugPrint(arr, nodesX, nodesY)
 print()
 
 smallestVal = arr[1][0]
-smallestX = 0
-smallestY = 1
+linkX = 0
+linkY = 1
 merges = []
 
 cycleCount = 0
-cycleMax = 6
 
 while cycleCount < cycleMax:
     #find smallest # in grid on one half
@@ -62,56 +62,39 @@ while cycleCount < cycleMax:
         for idx2, y in enumerate(x[0:idx]):
             if y < smallestVal:
                 smallestVal = y
-                smallestX = idx2
-                smallestY = idx
+                linkX = idx2
+                linkY = idx
 
     print("smallest value index is")
-    sys.stdout.write(str(nodesX[smallestX]) + " " + str(nodesY[smallestY]) + "\n")
+    sys.stdout.write(str(nodesX[linkX]) + " " + str(nodesY[linkY]) + "\n")
     print()
 
     #append smallest value to merge list
-    merges.append(nodesX[smallestX] + nodesY[smallestY])
+    merges.append(nodesX[linkX] + nodesY[linkY])
     print(merges)
     print()
 
-
-
-    #only need to step through arr once to compare
-    #not 100% sure this isright
-    #for idx, x in enumerate(arr):
-    #    if arr[smallestX][idx] < arr[smallestY][idx]:
-    #        sys.stdout.write(str(arr[smallestX][idx]) + " < " + str(arr[smallestY][idx]) + "\n")
-    #        x[smallestX] = arr[smallestX][idx]
-    #        arr[idx][smallestX] = arr[smallestX][idx]
-    #    else:
-    #        sys.stdout.write(str(arr[smallestX][idx]) + " > " + str(arr[smallestY][idx]) + "\n")
-    #        x[smallestX] = arr[smallestY][idx]
-    #        arr[idx][smallestX] = arr[smallest][idx]
-
-    #step downward?
-    #use moving row #, nut keep same minx and miny same
-    #use smallestX as base
-    #I think this works, I just need to train it more!!!!
-    #or switch to ave agglomertive clustering 
+    #steps through and adds new distance values to merged columns
+    #uses complete-link clustering
     for idx, x in enumerate(arr):
-        if x[smallestX] < x[smallestY]:
-            arr[smallestX][idx] = x[smallestX]
+        if x[linkX] > x[linkY]: #< is normal
+            arr[linkX][idx] = x[linkX]
         else:
-            x[smallestX] = x[smallestY]
-            arr[smallestX][idx] = x[smallestY]
+            x[linkX] = x[linkY]
+            arr[linkX][idx] = x[linkY]
 
-    #merge onto old col
-    nodesX[smallestX] = nodesX[smallestX] + nodesY[smallestY]
-    nodesY[smallestX] = nodesY[smallestX] + nodesY[smallestY]
+    #merge nodes list together
+    nodesX[linkX] = nodesX[linkX] + nodesY[linkY]
+    nodesY[linkX] = nodesY[linkX] + nodesY[linkY]
 
-    #delate r/c in list,prob could also b here
-    del arr[smallestY]
+    #delate other row and column in distance matrix
+    del arr[linkY]
 
     for x in arr:
-        del x[smallestY]
+        del x[linkY]
 
-    del nodesY[smallestY]
-    del nodesX[smallestY]
+    del nodesY[linkY]
+    del nodesX[linkY]
 
     debugPrint(arr, nodesX, nodesY)
     print()
