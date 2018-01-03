@@ -5,7 +5,7 @@ import sys
 
 fileName = "train.rin"
 dataFileName = "data"
-cycleMax = 5
+cycleMax = 20
 
 print("hello rin")
 print()
@@ -57,7 +57,11 @@ merges = []
 cycleCount = 0
 
 while cycleCount < cycleMax:
-    #find smallest # in grid on one half
+    #find smallest # in grid on one half...there's a bug here?
+    smallestVal = arr[1][0]
+    linkX = 0
+    linkY = 1
+
     for idx, x in enumerate(arr):
         for idx2, y in enumerate(x[0:idx]):
             if y < smallestVal:
@@ -66,7 +70,7 @@ while cycleCount < cycleMax:
                 linkY = idx
 
     print("smallest value index is")
-    sys.stdout.write(str(nodesX[linkX]) + " " + str(nodesY[linkY]) + "\n")
+    sys.stdout.write(str(nodesX[linkX]) + " " + str(nodesY[linkY]) + " " + str(smallestVal) + "\n")
     print()
 
     #append smallest value to merge list
