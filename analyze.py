@@ -1,11 +1,61 @@
 #other half of rin: find trends in data
-#rename linkX and linkY?
+#kmow when to stop running evo algoritham?
+#add better tracing, etc...
 import pickle
 import sys
 
+emotions = [
+  "anger",
+  "annoyance",
+  "contempt",
+  "disgust",
+  "irritation",
+  "anxiety",
+  "embarrassment",
+  "fear",
+  "helplessness",
+  "powerlessness",
+  "worry",
+  "doubt",
+  "envy",
+  "frustration",
+  "guilt",
+  "shame",
+  "boredom",
+  "despair",
+  "disappointment",
+  "hurt",
+  "sadness",
+  "shock",
+  "stress",
+  "tension",
+  "amusement",
+  "delight",
+  "elation",
+  "excitement",
+  "happiness",
+  "joy",
+  "pleasure",
+  "affection",
+  "empathy",
+  "friendliness",
+  "love",
+  "courage",
+  "hope",
+  "pride",
+  "satisfaction",
+  "trust",
+  "calm",
+  "content",
+  "relaxed",
+  "relieved",
+  "serene",
+  ]
+
 fileName = "train.rin"
 dataFileName = "data"
-cycleMax = 20
+
+clusterMax = 5; #target # of clusters
 
 print("hello rin")
 print()
@@ -39,6 +89,8 @@ def debugPrint(array, xList, yList):
 #load all data
 arr = loadArray()
 
+cycleMax = len(arr) - 1
+
 #define nodes
 nodesX = []
 nodesY = []
@@ -54,10 +106,9 @@ linkX = 0
 linkY = 1
 merges = []
 
-cycleCount = 0
-
-while cycleCount < cycleMax:
-    #find smallest # in grid on one half...there's a bug here?
+while len(nodesX) > clusterMax: #stop after # of clusters have formed
+    #possibly make this when entered emotions are clustered? 
+    #find smallest # in grid on one half
     smallestVal = arr[1][0]
     linkX = 0
     linkY = 1
@@ -81,7 +132,7 @@ while cycleCount < cycleMax:
     #steps through and adds new distance values to merged columns
     #uses complete-link clustering
     for idx, x in enumerate(arr):
-        if x[linkX] > x[linkY]: #< is normal
+        if x[linkX] > x[linkY]:
             arr[linkX][idx] = x[linkX]
         else:
             x[linkX] = x[linkY]
@@ -103,4 +154,8 @@ while cycleCount < cycleMax:
     debugPrint(arr, nodesX, nodesY)
     print()
 
-    cycleCount += 1
+#print associations
+for x in nodesX:
+    print()
+    for emotion in x:
+        print(emotions[emotion])
