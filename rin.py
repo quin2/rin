@@ -1,4 +1,4 @@
-#todo: clean up code, comment a bit 
+#quinn v 2018
 import sys
 import random
 import pickle
@@ -6,6 +6,7 @@ from pathlib import Path
 
 print("hello rin")
 
+#stores list of all possible emotions
 emotions = [
   "anger",
   "annoyance",
@@ -54,9 +55,9 @@ emotions = [
   "serene",
   ]
 
-fileName = "train.rin"
-dataFileName = "data"
-linksFileName = "linkages"
+fileName = "train.rin" #path for distance matrix
+dataFileName = "data" #path for number w/ number of training
+linksFileName = "linkages" #path for linkage matrix storage
 
 #get input character from console
 def getInput():
@@ -99,33 +100,13 @@ def createArray():
     for emotion in range(len(emotions)): toReturn +=[[0.0] * len(emotions)]
     return toReturn
 
-#load array from file
-def loadArray():
-    return pickle.load(open(fileName, "rb"))
+#universal load function
+def load(fName):
+    return pickle.load(open(fName, "rb"))
 
-#save array to file
-def saveArray(toSave):
-    pickle.dump(toSave, open(fileName, "wb"))
-    return
-
-#load # of times run from file
-def loadData():
-    if not Path(dataFileName).is_file():
-        saveData(0)
-    return pickle.load(open(dataFileName, "rb"))
-
-#save # of times run to file
-def saveData(toSave):
-    pickle.dump(toSave, open(dataFileName, "wb"))
-    return
-
-#load linkages from file...combine with loadArray and saveArray?
-def loadLinkages():
-    return pickle.load(open(linksFileName, "rb"))
-
-#save linkages to file
-def saveLinkages(toSave):
-    pickle.dump(toSave, open(linksFileName, "wb"))
+#universal save function
+def save(toSave, fName):
+    pickle.dump(toSave, open(fName, "wb"))
     return
 
 #central printing function, adapt to work without x and y axies?
@@ -185,10 +166,10 @@ def train():
 
     #load data from past sessions
     if not Path(fileName).is_file():
-        saveArray(createArray())
+        save(createArray(), fileName)
 
-    emotionData = loadArray()
-    currentNum = loadData() + targetLinkages
+    emotionData = load(fileName)
+    currentNum = load(dataFileName) + targetLinkages
 
     #move session into master
     for idx, noVal in enumerate(links):
@@ -197,16 +178,19 @@ def train():
             emotionData[yesVal][noVal] += linkValues[idx]
 
     #save data to array
-    saveArray(emotionData)
-    saveData(currentNum)
+    save(emotionData, fileName)
+
+    if not Path(dataFileName).is_file():
+        save(0, dataFileName)
+    else
+        save(currentNum, dataFileName)
     return
 
-#clusters all emotions from rin training distance matrix
-#TODO: save clusters to file!
+#clusters all emotions from distance matrix using hierarchical clustering
 clusterMax = 5; #target # of clusters
 def cluster():
     #load all data
-    arr = loadArray()
+    arr = load(fileName)
 
     cycleMax = len(arr) - 1
 
@@ -225,8 +209,8 @@ def cluster():
     linkY = 1
     merges = []
 
-    while len(nodesX) > clusterMax: #stop after # of clusters have formed
-        #possibly make this when entered emotions are clustered?
+    while len(nodesX) > clusterMax: #stop after target # of clusters have formed
+
         #find smallest # in grid on one half
         smallestVal = arr[1][0]
         linkX = 0
@@ -280,7 +264,7 @@ def cluster():
             print(emotions[emotion])
 
     #save associations to file
-    saveLinkages(nodesX)
+    save(nodesX, linksFileName)
     return
 
 #use model with emotional input
@@ -309,7 +293,7 @@ def enable():
         print("are you feeling " + emotions[rand] + "?")
         feel = getInput()
 
-    link = loadLinkages()
+    link = load(linksFileName)
     #search for feel in loadLinkages, find similar emotions
     clusterIndex = 0
     for cluster in link:
